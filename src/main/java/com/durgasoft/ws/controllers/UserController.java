@@ -2,13 +2,7 @@ package com.durgasoft.ws.controllers;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.durgasoft.ws.dao.UserDao;
 import com.durgasoft.ws.model.request.UserDetailsRequest;
@@ -22,20 +16,23 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
-	@GetMapping
-	public String getUsers() {
-		return "Get Users Method was called";
+	@GetMapping(path = "/{id}")
+	public UserRest getUsers(@PathVariable String id) {
+
+	    UserRest user = new UserRest();
+        UserDao userDao = userService.getUserById(id);
+        BeanUtils.copyProperties(userDao, user);
+		return user;
 	}
 	@PostMapping
-	public UserRest addUsers(@RequestBody UserDetailsRequest userDetails) {
+	public UserRest createUser(@RequestBody UserDetailsRequest userDetails) {
 		UserRest userRest = new UserRest();
 		UserDao userDao = new UserDao();
 		BeanUtils.copyProperties(userDetails, userDao);
 		
 		UserDao createdUser = userService.createUser(userDao);
-		BeanUtils.copyProperties(createdUser, userDao);
-		
-		return userRest;		
+		BeanUtils.copyProperties(createdUser, userRest);
+		return userRest;
 	}
 	@PutMapping
 	public String updateUsers() {
